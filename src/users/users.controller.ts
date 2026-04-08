@@ -1,0 +1,64 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import * as bcrypt from 'bcrypt';
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post()
+  async create(@Body() createUserDto: CreateUserDto) {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(createUserDto.passwordHash, salt);
+    
+    return this.usersService.create({
+      name: createUserDto.name,
+      email: createUserDto.email,
+      passwordHash: hash,
+      initials: createUserDto.initials,
+      role: { id: createUserDto.roleId } as any
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const updateData: any = {
+      name: updateUserDto.name,
+      email: updateUserDto.email,
+      initials: updateUserDto.initials,
+    };
+    
+    if (updateUserDto.passwordHash) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.passwordHash = await bcrypt.hash(updateUserDto.passwordHash, salt);
+    }
+    
+    if (updateUserDto.roleId) {
+      updateData.role = { id: updateUserDto.roleId };
+    }
+    
+    return this.usersService.update(id, updateData);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
+  }
+}
