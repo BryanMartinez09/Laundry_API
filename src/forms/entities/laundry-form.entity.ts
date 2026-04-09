@@ -37,6 +37,12 @@ export class LaundryForm {
   @Column({ type: 'text', nullable: true })
   notes: string;
 
+  @Column({ type: 'int', default: 0, name: 'total_taies_main' })
+  totalTaiesMain: number;
+
+  @Column({ type: 'int', default: 0, name: 'total_draps_main' })
+  totalDrapsMain: number;
+
   @Column({ type: 'enum', enum: FormStatus, default: FormStatus.DRAFT })
   status: FormStatus;
 

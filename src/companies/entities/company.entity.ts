@@ -8,6 +8,12 @@ export class Company {
   @Column({ type: 'varchar', length: 150 })
   name: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address: string;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  phone: string;
+
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
 

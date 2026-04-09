@@ -31,6 +31,16 @@ export class CreateFormDto {
   @IsOptional()
   notes?: string;
 
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  totalTaiesMain?: number;
+
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  totalDrapsMain?: number;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateFormSectionDto)

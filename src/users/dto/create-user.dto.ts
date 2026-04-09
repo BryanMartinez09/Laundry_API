@@ -11,7 +11,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  passwordHash: string; // In a real app we receive 'password' and hash it in service
+  password: string; // Recibimos el password en texto plano y lo hasheamos en el controlador
 
   @IsString()
   @IsOptional()

@@ -12,7 +12,7 @@ export class UsersController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(createUserDto.passwordHash, salt);
+    const hash = await bcrypt.hash(createUserDto.password, salt);
     
     return this.usersService.create({
       name: createUserDto.name,
@@ -44,9 +44,9 @@ export class UsersController {
       initials: updateUserDto.initials,
     };
     
-    if (updateUserDto.passwordHash) {
+    if (updateUserDto.password) {
       const salt = await bcrypt.genSalt(10);
-      updateData.passwordHash = await bcrypt.hash(updateUserDto.passwordHash, salt);
+      updateData.passwordHash = await bcrypt.hash(updateUserDto.password, salt);
     }
     
     if (updateUserDto.roleId) {

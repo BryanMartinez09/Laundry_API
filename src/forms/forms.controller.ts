@@ -13,6 +13,16 @@ import { FormStatus } from './entities/laundry-form.entity';
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
+  @Get('stats')
+  getStats() {
+    return this.formsService.getStats();
+  }
+
+  @Get('catalog')
+  getCatalog() {
+    return this.formsService.getCatalog();
+  }
+
   @Post()
   create(@Body() createFormDto: CreateFormDto, @Request() req) {
     return this.formsService.create(createFormDto, req.user.userId);

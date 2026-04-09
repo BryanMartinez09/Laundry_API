@@ -6,6 +6,7 @@ import { Repository, Between } from 'typeorm';
 import { LaundryForm, FormStatus } from './entities/laundry-form.entity';
 import { FormSection } from './entities/form-section.entity';
 import { FormItem } from './entities/form-item.entity';
+import { CatalogItem } from './entities/catalog-item.entity';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
 
@@ -18,7 +19,36 @@ export class FormsService {
     private sectionsRepository: Repository<FormSection>,
     @InjectRepository(FormItem)
     private itemsRepository: Repository<FormItem>,
+    @InjectRepository(CatalogItem)
+    private catalogRepository: Repository<CatalogItem>,
   ) {}
+
+  async getStats() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayCount = await this.formsRepository.count({
+      where: {
+        createdAt: Between(today, new Date()),
+        isActive: true,
+      },
+    });
+
+    const pendingCount = await this.formsRepository.count({
+      where: {
+        status: FormStatus.PENDING_APPROVAL,
+        isActive: true,
+      },
+    });
+
+    return { today: todayCount, pending: pendingCount };
+  }
+
+  getCatalog(): Promise<CatalogItem[]> {
+    return this.catalogRepository.find({
+      order: { category: 'ASC', displayOrder: 'ASC' },
+    });
+  }
 
   async create(createFormDto: CreateFormDto, userId: string): Promise<LaundryForm> {
     const form = this.formsRepository.create({
@@ -28,6 +58,8 @@ export class FormsService {
       plasticBagsSmall: createFormDto.plasticBagsSmall ?? 0,
       plasticBagsLarge: createFormDto.plasticBagsLarge ?? 0,
       notes: createFormDto.notes,
+      totalTaiesMain: createFormDto.totalTaiesMain ?? 0,
+      totalDrapsMain: createFormDto.totalDrapsMain ?? 0,
       createdBy: { id: userId } as any,
     });
 

@@ -22,7 +22,13 @@ export class AuthService {
   async login(user: any) {
     const payload = { email: user.email, sub: user.id, role: user.role?.name };
     return {
-      access_token: this.jwtService.sign(payload), // Signed for 24h as defined in module
+      access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.usersService.findOne(userId);
+    const { passwordHash, ...result } = user;
+    return result;
   }
 }
