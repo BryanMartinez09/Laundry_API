@@ -39,7 +39,12 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const role = payload.role?.toUpperCase() || 'EMPLOYEE';
       client.join(role);
       
-      this.logger.log(`Client connected: ${client.id} (User: ${payload.email}, Role: ${role})`);
+      // Join a room based on user ID for direct messages
+      if (payload.sub) {
+        client.join(payload.sub);
+      }
+      
+      this.logger.log(`Client connected: ${client.id} (User: ${payload.email}, Role: ${role}, ID: ${payload.sub})`);
     } catch (e) {
       this.logger.error(`Connection authentication failed: ${e.message}`);
       client.disconnect();
@@ -52,11 +57,19 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Enviar una notificación a un grupo específico (ej: ADMIN, MANAGER)
   sendToRole(role: string, event: string, payload: any) {
+    this.logger.log(`Emitiendo a rol ${role}: ${payload.title}`);
     this.server.to(role).emit(event, payload);
   }
 
   // Enviar a todos los usuarios administrativos
   sendToAdmins(event: string, payload: any) {
-    this.server.to('ADMIN').to('MANAGER').emit(event, payload);
+    this.logger.log(`Emitiendo a ADMINS/MANAGERS: ${payload.title}`);
+    this.server.to(['ADMIN', 'MANAGER']).emit(event, payload);
+  }
+
+  // Enviar a un usuario específico por su ID
+  sendToUser(userId: string, event: string, payload: any) {
+    this.logger.log(`Emitiendo a userId ${userId}: ${payload.title}`);
+    this.server.to(userId).emit(event, payload);
   }
 }

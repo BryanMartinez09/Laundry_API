@@ -146,7 +146,19 @@ export class FormsService {
     }
     form.status = FormStatus.APPROVED;
     form.approvedBy = { id: managerId } as any;
-    return this.formsRepository.save(form);
+    const savedForm = await this.formsRepository.save(form);
+
+    // Notify the creator that their form was approved
+    const creatorId = form.createdBy?.id;
+    if (creatorId) {
+      this.eventsGateway.sendToUser(creatorId, 'notification', {
+        title: '✅ Report Approved!',
+        message: `Your report for ${form.company?.name || 'a client'} has been approved.`,
+        formId: form.id,
+      });
+    }
+
+    return savedForm;
   }
 
   async remove(id: string): Promise<void> {

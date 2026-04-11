@@ -34,6 +34,7 @@ import { EventsModule } from './events/events.module';
     CompaniesModule,
     FormsModule,
     ReportsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
