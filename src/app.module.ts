@@ -9,6 +9,7 @@ import { RolesModule } from './roles/roles.module';
 import { CompaniesModule } from './companies/companies.module';
 import { FormsModule } from './forms/forms.module';
 import { ReportsModule } from './reports/reports.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [

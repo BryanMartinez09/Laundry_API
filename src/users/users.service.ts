@@ -16,24 +16,32 @@ export class UsersService {
   }
 
   findAll(): Promise<User[]> {
-    return this.usersRepository.find({ where: { isActive: true } });
+    return this.usersRepository.find({ 
+      relations: ['role']
+    });
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id, isActive: true } });
+    const user = await this.usersRepository.findOne({ 
+      where: { id },
+      relations: ['role']
+    });
     if (!user) throw new NotFoundException(`User #${id} not found`);
     return user;
   }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
-    const user = await this.usersRepository.findOne({ where: { email, isActive: true } });
+    const user = await this.usersRepository.findOne({ 
+      where: { email },
+      relations: ['role']
+    });
     return user ?? undefined;
   }
 
   async update(id: string, userData: Partial<User>): Promise<User> {
-    await this.findOne(id);
-    await this.usersRepository.update(id, userData);
-    return this.findOne(id);
+    const user = await this.findOne(id);
+    const updatedUser = this.usersRepository.merge(user, userData);
+    return this.usersRepository.save(updatedUser);
   }
 
   async remove(id: string): Promise<void> {

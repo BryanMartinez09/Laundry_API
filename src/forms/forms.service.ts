@@ -9,6 +9,7 @@ import { FormItem } from './entities/form-item.entity';
 import { CatalogItem } from './entities/catalog-item.entity';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class FormsService {
@@ -21,6 +22,7 @@ export class FormsService {
     private itemsRepository: Repository<FormItem>,
     @InjectRepository(CatalogItem)
     private catalogRepository: Repository<CatalogItem>,
+    private eventsGateway: EventsGateway,
   ) {}
 
   async getStats() {
@@ -60,6 +62,7 @@ export class FormsService {
       notes: createFormDto.notes,
       totalTaiesMain: createFormDto.totalTaiesMain ?? 0,
       totalDrapsMain: createFormDto.totalDrapsMain ?? 0,
+      status: (createFormDto.status as any) || FormStatus.DRAFT,
       createdBy: { id: userId } as any,
     });
 
@@ -85,6 +88,14 @@ export class FormsService {
         );
         await this.itemsRepository.save(items);
       }
+    }
+
+    if (savedForm.status === FormStatus.PENDING_APPROVAL) {
+      this.eventsGateway.sendToAdmins('notification', {
+        title: 'New Pending Report',
+        message: `A new report from ${createFormDto.companyId} requires approval.`,
+        formId: savedForm.id,
+      });
     }
 
     return this.findOne(savedForm.id);

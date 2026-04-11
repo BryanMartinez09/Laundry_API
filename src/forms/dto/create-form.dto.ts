@@ -45,4 +45,8 @@ export class CreateFormDto {
   @ValidateNested({ each: true })
   @Type(() => CreateFormSectionDto)
   sections: CreateFormSectionDto[];
+
+  @IsString()
+  @IsOptional()
+  status?: string;
 }
