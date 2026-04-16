@@ -17,6 +17,7 @@ export class UsersService {
 
   findAll(): Promise<User[]> {
     return this.usersRepository.find({ 
+      where: { isActive: true },
       relations: ['role']
     });
   }

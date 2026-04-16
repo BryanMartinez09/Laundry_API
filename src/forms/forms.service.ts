@@ -23,7 +23,7 @@ export class FormsService {
     @InjectRepository(CatalogItem)
     private catalogRepository: Repository<CatalogItem>,
     private eventsGateway: EventsGateway,
-  ) {}
+  ) { }
 
   async getStats() {
     const today = new Date();

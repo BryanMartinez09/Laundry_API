@@ -1,6 +1,6 @@
 import {
   Controller, Get, Post, Body, Patch, Param,
-  Delete, UseGuards, Request, Query
+  Delete, UseGuards, Request, Query, HttpCode,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 import { CreateFormDto } from './dto/create-form.dto';
@@ -56,6 +56,7 @@ export class FormsController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id') id: string) {
     return this.formsService.remove(id);
   }
