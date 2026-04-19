@@ -64,6 +64,7 @@ The application is structured through functional modules to ensure maintainabili
 ### Form Management (Forms)
 - **Core Logic:** The `FormsService` facilitates the complete lifecycle of laundry reports, including creation, draft persistence, and manager approval.
 - **Approval Workflow:** Once a report is submitted, managers can approve it, triggering automated notifications to relevant users.
+- **Soft-Delete:** Reports can be deactivated via `DELETE /forms/:id`. The record is flagged `isActive: false` and excluded from all queries. Approved reports remain protected. This ensures full data traceability while keeping active listings clean.
 
 ### Analytics and Reporting (Reports)
 - **Aggregation Logic:** The `ReportsService` performs complex data aggregation, calculating totals for standard and colored items, sheet sizes, and processing metrics across defined temporal ranges.
