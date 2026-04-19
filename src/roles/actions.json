@@ -1,0 +1,34 @@
+{
+  "view_actions": [
+    {
+      "view": "Forms",
+      "label": "Laundry Forms / Entry",
+      "actions": ["View", "Add", "Edit", "Delete", "Approve"]
+    },
+    {
+      "view": "Reports",
+      "label": "Cumulative Reports",
+      "actions": ["View", "Export", "View Charts"]
+    },
+    {
+      "view": "Users",
+      "label": "User Management",
+      "actions": ["View", "Add", "Edit", "Delete"]
+    },
+    {
+      "view": "Companies",
+      "label": "Company Management",
+      "actions": ["View", "Add", "Edit", "Delete"]
+    },
+    {
+      "view": "Catalog",
+      "label": "Item Catalog",
+      "actions": ["View", "Edit"]
+    },
+    {
+      "view": "Profile",
+      "label": "My Profile",
+      "actions": ["View", "Edit"]
+    }
+  ]
+}

@@ -1,14 +1,18 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode } from '@nestjs/common';
+import { RolesGuard } from '../auth/roles.guard';
+import { CheckPermission } from '../auth/permission.decorator';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import * as bcrypt from 'bcrypt';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @CheckPermission('Users', 'Agregar')
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const salt = await bcrypt.genSalt(10);
@@ -24,6 +28,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @CheckPermission('Users', 'Mostrar')
   @Get()
   findAll() {
     return this.usersService.findAll();

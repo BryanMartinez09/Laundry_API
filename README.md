@@ -35,12 +35,16 @@ The Laundry Management API is a robust backend service designed to digitize and 
    JWT_SECRET=your_jwt_secret_key
    ```
 
-3. Initialize the database schema and seed initial data:
-   - Create a database named `laundry-db` in your MySQL instance.
-   - Execute the seeding script to populate roles, administrative accounts, and the initial item catalog:
-     ```bash
-     npm run seed
-     ```
+3. Initialize the database:
+   The application now features **Automatic Seeding**. On the first launch, the system will automatically populate roles, administrative accounts, and the initial item catalog.
+   
+   > [!IMPORTANT]
+   > For the best experience and to ensure the item catalog is correctly synchronized with all metadata (like sheet sizes), it is highly recommended to use a **fresh database** or ensure the `catalog_items` table is empty before launching the API for the first time.
+   
+   **Default Credentials:**
+   - **Admin:** `admin@laundry.com` / `admin123`
+   - **Manager:** `manager@laundry.com` / `manager123`
+   - **Employee:** `employee@laundry.com` / `employee123`
 
 4. Launch the application:
    ```bash
@@ -55,6 +59,7 @@ The application is structured through functional modules to ensure maintainabili
 ### Identity and Access Management (Auth, Users, Roles)
 - **Controllers:** Handle authentication requests, specifically login and profile retrieval.
 - **Services:** Manage credential validation using bcrypt hashing and issue 24-hour JSON Web Tokens (JWT). Authorization is enforced via role-based access control (Admin, Manager, Employee).
+- **Independent Mobile RBAC:** The system now features a bifurcated permission plane. In addition to standard web permissions, each role contains a `permissions_mobile` JSON field. This allows administrators to toggle feature visibility (View, Add, Edit, etc.) specifically for the mobile application without affecting the web dashboard.
 
 ### Form Management (Forms)
 - **Core Logic:** The `FormsService` facilitates the complete lifecycle of laundry reports, including creation, draft persistence, and manager approval.

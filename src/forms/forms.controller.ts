@@ -6,9 +6,11 @@ import { FormsService } from './forms.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { CheckPermission } from '../auth/permission.decorator';
 import { FormStatus } from './entities/laundry-form.entity';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('forms')
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
@@ -50,6 +52,7 @@ export class FormsController {
   }
 
   // Endpoint de aprobación — solo MANAGER/ADMIN deben llegar aquí
+  @CheckPermission('Forms', 'Aprobar')
   @Patch(':id/approve')
   approve(@Param('id') id: string, @Request() req) {
     return this.formsService.approve(id, req.user.userId);

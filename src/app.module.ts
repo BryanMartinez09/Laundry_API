@@ -10,6 +10,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { FormsModule } from './forms/forms.module';
 import { ReportsModule } from './reports/reports.module';
 import { EventsModule } from './events/events.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { EventsModule } from './events/events.module';
     FormsModule,
     ReportsModule,
     EventsModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
