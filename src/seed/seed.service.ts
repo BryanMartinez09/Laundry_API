@@ -65,20 +65,40 @@ export class SeedService implements OnModuleInit {
       ]
     };
 
+    const mobilePermissions = {
+      ADMIN: [
+        { view: 'Forms', actions: ['View', 'Add', 'Edit', 'Delete', 'Approve'] },
+        { view: 'Reports', actions: ['View', 'Export', 'Graphs'] },
+        { view: 'Profile', actions: ['View', 'Edit'] }
+      ],
+      MANAGER: [
+        { view: 'Forms', actions: ['View', 'Add', 'Edit', 'Approve'] },
+        { view: 'Reports', actions: ['View', 'Export', 'Graphs'] },
+        { view: 'Profile', actions: ['View', 'Edit'] }
+      ],
+      EMPLOYEE: [
+        { view: 'Forms', actions: ['View', 'Add', 'Edit'] },
+        { view: 'Reports', actions: ['View'] },
+        { view: 'Profile', actions: ['View', 'Edit'] }
+      ]
+    };
+
     for (const name of roleNames) {
       let role = await this.rolesRepo.findOne({ where: { name } });
       if (!role) {
         role = this.rolesRepo.create({ 
           name,
-          permissions: defaultPermissions[name] || [] 
+          permissions: defaultPermissions[name] || [],
+          permissions_mobile: mobilePermissions[name] || []
         });
         role = await this.rolesRepo.save(role);
         this.logger.debug(`Created role: ${name} with default permissions`);
-      } else if (!role.permissions || !Array.isArray(role.permissions) || role.permissions.length === 0) {
-        // If role exists but has no permissions, update it
+      } else if (!role.permissions_mobile || role.permissions_mobile.length === 0) {
+        // If role exists but has no mobile permissions, update it
         role.permissions = defaultPermissions[name] || [];
+        role.permissions_mobile = mobilePermissions[name] || [];
         await this.rolesRepo.save(role);
-        this.logger.debug(`Updated role ${name} with default permissions`);
+        this.logger.debug(`Updated role ${name} with default mobile permissions`);
       }
       savedRoles.push(role);
     }

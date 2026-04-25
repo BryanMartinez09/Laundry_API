@@ -1,16 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(Role)
     private rolesRepository: Repository<Role>,
+    @Inject(forwardRef(() => EventsGateway))
+    private eventsGateway: EventsGateway,
   ) {}
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
@@ -31,7 +34,11 @@ export class RolesService {
   async updatePermissions(id: string, permissions: any) {
     const role = await this.findOne(id);
     role.permissions = permissions;
-    return this.rolesRepository.save(role);
+    const updated = await this.rolesRepository.save(role);
+    
+    this.eventsGateway.server.emit('reload_permissions');
+    
+    return updated;
   }
 
   async updateMobilePermissions(id: string, permissions: any) {
@@ -43,6 +50,12 @@ export class RolesService {
     const savedRole = await this.rolesRepository.save(role);
     
     console.log(`[RolesService] Saved Role Result:`, JSON.stringify(savedRole, null, 2));
+    
+    // Emitir evento para que la App refresque permisos automáticamente
+    if (this.eventsGateway?.server) {
+      this.eventsGateway.server.emit('reload_permissions');
+    }
+    
     return savedRole;
   }
 
