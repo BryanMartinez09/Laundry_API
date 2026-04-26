@@ -20,20 +20,19 @@ export class RolesGuard implements CanActivate {
     }
 
     // Admin override
-    if (user.role.toUpperCase() === 'ADMIN' || user.email === 'admin@laundry.com') {
+    const roleName = user.role?.name || user.role; // Handle both object and string
+    if (roleName.toUpperCase() === 'ADMIN' || user.email === 'admin@laundry.com') {
       return true;
     }
 
     // Role-based permissions check
-    // Note: The user object in the request comes from JwtStrategy.
-    // We need to ensure the permissions are available here.
-    // In our current setup, user.role is just the name (string).
-    // We might need to fetch the full role with permissions if the token is small.
-    // To keep it efficient, we can trust the token if we include the permissions there,
-    // but for now, we'll implement a name-based fallback or suggest a more robust check.
-
-    const permissions = user.permissions || [];
-    const viewPermission = permissions.find(p => p.view === requiredPermission.view);
+    // We get both set of permissions from the fresh user object
+    const permissions = user.role?.permissions || user.permissions || [];
+    const permissionsMobile = user.role?.permissions_mobile || user.permissions_mobile || [];
+    
+    // Check in both (for compatibility between web/mobile requests)
+    const allPermissions = [...permissions, ...permissionsMobile];
+    const viewPermission = allPermissions.find(p => p.view === requiredPermission.view);
     
     if (!viewPermission) {
       throw new ForbiddenException(`Access denied: Missing permission for ${requiredPermission.view}`);
