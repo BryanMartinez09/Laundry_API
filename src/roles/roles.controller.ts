@@ -10,14 +10,14 @@ import { CheckPermission } from '../auth/permission.decorator';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @CheckPermission('Roles', 'Agregar')
+  @CheckPermission('Roles', 'Add')
   @Post()
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create(createRoleDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @CheckPermission('Roles', 'Mostrar')
+  // Permiso abierto para lectura básica (necesario para dropdowns en otras pantallas)
   @Get()
   findAll() {
     return this.rolesService.findAll();
@@ -30,14 +30,14 @@ export class RolesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @CheckPermission('Roles', 'Editar')
+  @CheckPermission('Roles', 'Edit')
   @Patch(':id/permissions')
   updatePermissions(@Param('id') id: string, @Body() permissions: any) {
     return this.rolesService.updatePermissions(id, permissions);
   }
 
   @UseGuards(JwtAuthGuard)
-  @CheckPermission('Roles', 'Editar')
+  @CheckPermission('Roles', 'Edit')
   @Patch(':id/permissions-mobile')
   updateMobilePermissions(@Param('id') id: string, @Body() permissions: any) {
     return this.rolesService.updateMobilePermissions(id, permissions);

@@ -21,24 +21,28 @@ export class RolesGuard implements CanActivate {
 
     // Admin override
     const roleName = user.role?.name || user.role; // Handle both object and string
-    if (roleName.toUpperCase() === 'ADMIN' || user.email === 'admin@laundry.com') {
+    if (roleName.toString().toUpperCase() === 'ADMIN' || user.email === 'admin@laundry.com') {
       return true;
     }
 
     // Role-based permissions check
-    // We get both set of permissions from the fresh user object
     const permissions = user.role?.permissions || user.permissions || [];
     const permissionsMobile = user.role?.permissions_mobile || user.permissions_mobile || [];
     
     // Check in both (for compatibility between web/mobile requests)
     const allPermissions = [...permissions, ...permissionsMobile];
-    const viewPermission = allPermissions.find(p => p.view === requiredPermission.view);
+    const viewName = requiredPermission.view.trim().toLowerCase();
+    const actionName = requiredPermission.action.trim().toLowerCase();
+
+    const viewPermission = allPermissions.find(p => (p.view || '').toString().trim().toLowerCase() === viewName);
     
     if (!viewPermission) {
       throw new ForbiddenException(`Access denied: Missing permission for ${requiredPermission.view}`);
     }
 
-    if (!viewPermission.actions.includes(requiredPermission.action)) {
+    const hasAction = (viewPermission.actions || []).some(a => a.toString().trim().toLowerCase() === actionName);
+
+    if (!hasAction) {
       throw new ForbiddenException(`Access denied: Missing action ${requiredPermission.action} for ${requiredPermission.view}`);
     }
 

@@ -29,6 +29,11 @@
       "view": "Profile",
       "label": "My Profile",
       "actions": ["View", "Edit"]
+    },
+    {
+      "view": "Roles",
+      "label": "Web Permissions",
+      "actions": ["View", "Edit"]
     }
   ]
 }

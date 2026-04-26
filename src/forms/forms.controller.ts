@@ -15,21 +15,25 @@ import { FormStatus } from './entities/laundry-form.entity';
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
+  @CheckPermission('Forms', 'View')
   @Get('stats')
   getStats() {
     return this.formsService.getStats();
   }
 
+  @CheckPermission('Forms', 'View')
   @Get('catalog')
   getCatalog() {
     return this.formsService.getCatalog();
   }
 
+  @CheckPermission('Forms', 'Add')
   @Post()
   create(@Body() createFormDto: CreateFormDto, @Request() req) {
     return this.formsService.create(createFormDto, req.user.userId);
   }
 
+  @CheckPermission('Forms', 'View')
   @Get()
   findAll(
     @Query('companyId') companyId?: string,
@@ -41,23 +45,26 @@ export class FormsController {
     return this.formsService.findAll({ companyId, startDate, endDate, employeeId, status });
   }
 
+  @CheckPermission('Forms', 'View')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.formsService.findOne(id);
   }
 
+  @CheckPermission('Forms', 'Edit')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFormDto: UpdateFormDto) {
     return this.formsService.update(id, updateFormDto);
   }
 
   // Endpoint de aprobación — solo MANAGER/ADMIN deben llegar aquí
-  @CheckPermission('Forms', 'Aprobar')
+  @CheckPermission('Forms', 'Approve')
   @Patch(':id/approve')
   approve(@Param('id') id: string, @Request() req) {
     return this.formsService.approve(id, req.user.userId);
   }
 
+  @CheckPermission('Forms', 'Delete')
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {

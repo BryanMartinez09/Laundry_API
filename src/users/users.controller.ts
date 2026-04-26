@@ -12,7 +12,7 @@ import * as bcrypt from 'bcrypt';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @CheckPermission('Users', 'Agregar')
+  @CheckPermission('Users', 'Add')
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const salt = await bcrypt.genSalt(10);
@@ -28,7 +28,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @CheckPermission('Users', 'Mostrar')
+  @CheckPermission('Users', 'View')
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -41,6 +41,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @CheckPermission('Users', 'Edit')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const updateData: any = {
@@ -62,6 +63,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @CheckPermission('Users', 'Delete')
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {
